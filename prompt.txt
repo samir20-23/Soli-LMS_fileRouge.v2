@@ -1,0 +1,232 @@
+soli lms : 
+"A modern, user-friendly platform design for centralized sharing of educational documents and resources. The platform should have a clean, intuitive user interface with easy navigation. The main features include:
+
+An organized dashboard displaying shared documents and resources.
+A simple file upload button for users to upload and share documents.
+Clear sections for organizing documents into categories like 'Courses', 'References', and 'Assignments'.
+Secure access control, ensuring documents are shared only with authorized users.
+A search bar at the top to quickly find resources.
+A clear, minimalist design with icons representing each function (upload, share, download, etc.), and clean lines for easy reading.
+The design should convey professionalism, simplicity, and accessibility for learners and trainers.
+ i need create this part in laravel . firstly i explan for you what i will dot and what is this : 
+
+we in big project have this steps : 
+Enregistrement des absences des apprenants pour une séance
+Calcul automatisé des sanctions basées sur les absences
+Ajout de justificatifs pour les absences enregistrées
+Inscription et évaluation initiale des apprenants via des tests
+Suivi des progressions dans les autoformations des apprenants
+Organisation d'entretiens pour valider les inscriptions
+Organisation et consultation des emplois du temps
+Gestion des notes et des activités pour chaque séance
+Planification des sessions et gestion du calendrier des formations
+Organisation et suivi des entretiens individuels
+Création personnalisée de questionnaires à choix multiples
+Suivi des activités et rapports liés à la veille stratégique
+Gestion et suivi des ordres de missions administratifs
+Gestion des demandes et approbations de congés
+Traitement et archivage des certificats de maladie
+Organisation des participants à l'événement IT Wave
+Gestion des inscriptions et des groupes pour les ateliers
+Lancement et suivi des QCM pour les apprenants
+Création et mise à jour des tableaux d'affichage
+Génération automatique des certificats de participation
+Partage centralisé de documents et ressources pédagogiques
+Création et gestion de sondages en temps réel
+Outil collaboratif pour le brainstorming en ligne
+Attribution de badges numériques pour les réalisations
+Regroupement des ressources partagées comme des livres blancs
+Création automatique et intelligente de groupes pour les projets
+anyone have a sujet  and he is create a presentation and rapro and card emphate  and develop the sujet in laravel for this suje   . my suje is Partage centralisé de documents et ressources pédagogiques
+so give me the steps for create a project in laravel show the emphate and  show the : 
+@startuml
+title Partage de documents et de ressources - Cas d'Utilisation
+left to right direction
+actor Utilisateur as U
+actor Responsable_des_stagiaires as A
+
+rectangle "Actions" {
+    usecase UC1 as "Télécharger un document"
+    usecase UC2 as "Partager un document"
+    usecase UC3 as "Consulter les ressources partagées"
+    usecase UC4 as "Organiser les ressources"
+    usecase UC5 as "Générer un rapport d'accès"
+}
+
+U -- UC1 : "Télécharge"
+U -- UC2 : "Partage"
+U -- UC3 : "Consulte"
+A -- UC4 : "Organise"
+A -- UC5 : "Crée un rapport"
+@enduml
+and 
+@startuml
+left to right direction
+
+class Utilisateur {
+    +id: Int
+    +nom: String
+    +email: String
+    +role: String
+    +created_at: timestamp
+    +updated_at: timestamp
+}
+
+class Document {
+    +id: Int
+    +titre: String
+    +chemin_fichier: String
+    +date_telechargement: timestamp
+    +created_at: timestamp
+    +updated_at: timestamp
+}
+
+class Ressource {
+    +id: Int
+    +nom: String
+    +type: String
+    +description: String
+    +created_at: timestamp
+    +updated_at: timestamp
+}
+
+class Categorie {
+    +id: Int
+    +nom: String
+    +description: String
+    +created_at: timestamp
+    +updated_at: timestamp
+}
+
+class Partage {
+    +id: Int
+    +document_id: Int
+    +utilisateur_id: Int
+    +date_partage: timestamp
+    +niveau_permission: String
+}
+
+Utilisateur "1" -- "*" Document : "Télécharge"
+Utilisateur "1" -- "*" Partage : "Partage des documents"
+Partage "*" -- "1" Document : "Contient"
+Utilisateur "1" -- "*" Ressource : "Accède à"
+Document "1" -- "*" Categorie : "Classifie sous"
+Ressource "1" -- "*" Categorie : "Classifie sous"
+@enduml
+
+and :
+@startuml
+title Partage de documents et de ressources - Cas d'Utilisation
+left to right direction
+actor Utilisateur as U
+actor Responsable_des_stagiaires as A
+
+rectangle "Actions" {
+    usecase UC1 as "Télécharger un document"
+    usecase UC2 as "Partager un document"
+    usecase UC3 as "Consulter les ressources partagées"
+    usecase UC4 as "Organiser les ressources"
+    usecase UC5 as "Générer un rapport d'accès"
+}
+
+U -- UC1 : "Télécharge"
+U -- UC2 : "Partage"
+U -- UC3 : "Consulte"
+A -- UC4 : "Organise"
+A -- UC5 : "Crée un rapport"
+@enduml
+
+ i dont know this or this : 
+
+' @startuml
+' title Partage de documents et de ressources - Cas d'Utilisation
+' left to right direction
+' actor Utilisateur as U
+' actor Responsable_des_stagiaires as A
+
+' rectangle "Actions" {
+'     usecase UC1 as "Télécharger un document"
+'     usecase UC2 as "Partager un document"
+'     usecase UC3 as "Consulter les ressources partagées"
+'     usecase UC4 as "Organiser les ressources"
+'     usecase UC5 as "Générer un rapport d'accès"
+' }
+
+' U -- UC1 : "Télécharge"
+' U -- UC2 : "Partage"
+' U -- UC3 : "Consulte"
+' A -- UC4 : "Organise"
+' A -- UC5 : "Crée un rapport"
+' @enduml
+@startuml
+title Partage de documents et de ressources - Cas d'Utilisation - Sprint 1
+left to right direction
+
+actor Utilisateur as U
+
+rectangle "Sprint 1" {
+    usecase UC1 as "Télécharger un document"
+    usecase UC2 as "Consulter les ressources partagées"
+}
+
+U -- UC1 : "Télécharge"
+U -- UC2 : "Consulte"
+@enduml
+
+i dont know this or this : 
+
+' @startuml
+' title Partage de documents et de ressources - Cas d'Utilisation - Sprint 1
+' left to right direction
+
+' actor Utilisateur as U
+
+' rectangle "Sprint 1" {
+'     usecase UC1 as "Télécharger un document"
+'     usecase UC2 as "Consulter les ressources partagées"
+' }
+
+' U -- UC1 : "Télécharge"
+' U -- UC2 : "Consulte"
+' @enduml
+
+ 
+@startuml
+title Partage de documents et de ressources - Cas d'Utilisation - Sprint 2
+left to right direction
+
+actor Utilisateur as U
+actor Responsable_des_stagiaires as A
+
+rectangle "Sprint 2" {
+    usecase UC3 as "Partager un document"
+    usecase UC4 as "Organiser les ressources"
+    usecase UC5 as "Générer un rapport d'accès"
+}
+
+U -- UC3 : "Partage"
+A -- UC4 : "Organise"
+A -- UC5 : "Crée un rapport"
+@enduml
+
+ i dony konw this or this : 
+' @startuml
+' title Partage de documents et de ressources - Cas d'Utilisation - Sprint 2
+' left to right direction
+
+' actor Utilisateur as U
+' actor Responsable_des_stagiaires as A
+
+' rectangle "Sprint 2" {
+'     usecase UC3 as "Partager un document"
+'     usecase UC4 as "Organiser les ressources"
+'     usecase UC5 as "Générer un rapport d'accès"
+' }
+
+' U -- UC3 : "Partage"
+' A -- UC4 : "Organise"
+' A -- UC5 : "Crée un rapport
+
+"
+' @enduml
+. and ineed use adminlte and npm run dev and you know 
