@@ -34,6 +34,8 @@ class RessourceController extends Controller
         return back()->with('success', 'Resource updated successfully.');
     }
     
+    
+   
     /**
      * Show the form for creating a new resource.
      */

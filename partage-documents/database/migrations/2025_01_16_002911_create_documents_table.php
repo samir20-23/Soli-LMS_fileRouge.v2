@@ -13,12 +13,13 @@ return new class extends Migration
     {
         Schema::create('documents', function (Blueprint $table) {
             $table->id();
-            $table->string('titre');
+            $table->string('title');
             $table->string('chemin_fichier');
             $table->enum('etat_validation', ['en_attente', 'valide', 'refuse'])->default('en_attente');
             $table->timestamp('date_telechargement')->nullable();
             $table->timestamps();
-            $table->foreignId('utilisateur_id')->constrained('utilisateurs')->onDelete('cascade');
+            $table->unsignedBigInteger('utilisateur_id')->nullable();
+
         });
         
     }
