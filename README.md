@@ -1,183 +1,249 @@
-# Step 1: Install Laravel
-composer create-project --prefer-dist laravel/laravel 21-Partage-de-documents
-cd 21-Partage-de-documents
-php artisan serve
+Wow, it’s amazing that you’re starting your programming journey at 10! 👏 Let’s build your **Partage de Documents et Ressources** project step by step in Laravel with **AdminLTE**.
 
-# Step 2: Install AdminLTE
-composer require "acacha/admin-lte-template-laravel:~3.0"
-php artisan vendor:publish --provider="Acacha\AdminLteTemplateLaravel\AdminLteServiceProvider"
-npm install && npm run dev
-php artisan adminlte:install
+We will:
+1. **Set up Laravel and AdminLTE.**
+2. **Create models, migrations, and controllers.**
+3. **Build the views in Blade templates.**
+4. **Run everything with `npm run dev`.**
 
-# Step 3: Set Up Database
-# Create the database "partage_documents" in MySQL
-# Update the .env file with your database credentials
-# Example:
-# DB_CONNECTION=mysql
-# DB_HOST=127.0.0.1
-# DB_PORT=3306
-# DB_DATABASE=partage_documents
-# DB_USERNAME=root
-# DB_PASSWORD=
+---
 
-# Step 4: Create Migrations for Documents and Resources
-php artisan make:migration create_documents_table --create=documents
-php artisan make:migration create_resources_table --create=resources
+### **Step 1: Set Up Laravel and AdminLTE**
+#### Install Laravel
+1. Open your terminal.
+2. Run:
+   ```bash
+   composer create-project laravel/laravel partage-documents
+   cd partage-documents
+   ```
 
-# Edit the migration files
-# Documents Table
+#### Install AdminLTE
+1. Install the package:
+   ```bash
+   composer require jeroennoten/laravel-adminlte
+   ```
+2. Publish AdminLTE:
+   ```bash
+   php artisan adminlte:install
+   ```
+3. Run:
+   ```bash
+   npm install && npm run dev
+   ```
+   This will compile AdminLTE assets.
+
+---
+
+### **Step 2: Create Models and Migrations**
+We’ll create models for **Utilisateur**, **Document**, **Ressource**, and **Categorie**.
+
+#### Generate Models and Migrations
+Run these commands:
+```bash
+php artisan make:model Utilisateur -m
+php artisan make:model Document -m
+php artisan make:model Ressource -m
+php artisan make:model Categorie -m
+```
+
+#### Edit Migrations
+Go to `database/migrations` and edit the migration files.
+
+**Utilisateur Migration** (`create_utilisateurs_table.php`):
+```php
+public function up()
+{
+    Schema::create('utilisateurs', function (Blueprint $table) {
+        $table->id();
+        $table->string('nom');
+        $table->string('email')->unique();
+        $table->string('role'); // Utilisateur or Formateur
+        $table->timestamps();
+    });
+}
+```
+
+**Document Migration** (`create_documents_table.php`):
+```php
 public function up()
 {
     Schema::create('documents', function (Blueprint $table) {
         $table->id();
-        $table->string('title');
-        $table->text('description')->nullable();
-        $table->string('file_path');
+        $table->string('titre');
+        $table->string('chemin_fichier');
+        $table->string('etat_validation')->default('En attente');
+        $table->unsignedBigInteger('categorie_id');
+        $table->unsignedBigInteger('utilisateur_id');
         $table->timestamps();
+
+        $table->foreign('categorie_id')->references('id')->on('categories')->onDelete('cascade');
+        $table->foreign('utilisateur_id')->references('id')->on('utilisateurs')->onDelete('cascade');
     });
 }
+```
 
-# Resources Table
+**Ressource Migration** (`create_ressources_table.php`):
+```php
 public function up()
 {
-    Schema::create('resources', function (Blueprint $table) {
+    Schema::create('ressources', function (Blueprint $table) {
         $table->id();
-        $table->string('name');
-        $table->text('details')->nullable();
-        $table->unsignedBigInteger('document_id');
-        $table->foreign('document_id')->references('id')->on('documents')->onDelete('cascade');
+        $table->string('nom');
+        $table->string('type');
+        $table->text('description');
+        $table->unsignedBigInteger('categorie_id');
+        $table->timestamps();
+
+        $table->foreign('categorie_id')->references('id')->on('categories')->onDelete('cascade');
+    });
+}
+```
+
+**Categorie Migration** (`create_categories_table.php`):
+```php
+public function up()
+{
+    Schema::create('categories', function (Blueprint $table) {
+        $table->id();
+        $table->string('nom');
+        $table->text('description')->nullable();
         $table->timestamps();
     });
 }
+```
 
-# Step 5: Run the Migrations
+#### Run Migrations
+Run:
+```bash
 php artisan migrate
+```
 
-# Step 6: Create Models for Documents and Resources
-php artisan make:model Document
-php artisan make:model Resource
+---
 
-# Edit the models
-# Document Model
-public function resources()
+### **Step 3: Create Controllers**
+Run these commands to create controllers:
+```bash
+php artisan make:controller UtilisateurController
+php artisan make:controller DocumentController
+php artisan make:controller RessourceController
+php artisan make:controller CategorieController
+```
+
+Add basic functions in each controller. Example:
+
+**DocumentController**:
+```php
+namespace App\Http\Controllers;
+
+use App\Models\Document;
+use Illuminate\Http\Request;
+
+class DocumentController extends Controller
 {
-    return $this->hasMany(Resource::class);
+    public function index()
+    {
+        $documents = Document::all();
+        return view('documents.index', compact('documents'));
+    }
+
+    public function create()
+    {
+        return view('documents.create');
+    }
+
+    public function store(Request $request)
+    {
+        $document = new Document();
+        $document->titre = $request->titre;
+        $document->chemin_fichier = $request->file('chemin_fichier')->store('documents');
+        $document->etat_validation = 'En attente';
+        $document->categorie_id = $request->categorie_id;
+        $document->utilisateur_id = auth()->id();
+        $document->save();
+
+        return redirect()->route('documents.index');
+    }
 }
+```
 
-# Resource Model
-public function document()
-{
-    return $this->belongsTo(Document::class);
-}
+---
 
-# Step 7: Create Controllers for Documents and Resources
-php artisan make:controller DocumentController --resource
-php artisan make:controller ResourceController --resource
+### **Step 4: Create Blade Views**
+In `resources/views`, create directories like `documents`, `ressources`, etc.
 
-# Step 8: Define Routes
-# In routes/web.php
+**documents/index.blade.php**:
+```html
+@extends('adminlte::page')
+
+@section('title', 'Documents')
+
+@section('content')
+    <h1>Liste des Documents</h1>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Titre</th>
+                <th>Fichier</th>
+                <th>Validation</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($documents as $document)
+                <tr>
+                    <td>{{ $document->id }}</td>
+                    <td>{{ $document->titre }}</td>
+                    <td><a href="{{ asset('storage/' . $document->chemin_fichier) }}">Télécharger</a></td>
+                    <td>{{ $document->etat_validation }}</td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+@endsection
+```
+
+**documents/create.blade.php**:
+```html
+@extends('adminlte::page')
+
+@section('title', 'Créer Document')
+
+@section('content')
+    <h1>Créer un Document</h1>
+    <form action="{{ route('documents.store') }}" method="POST" enctype="multipart/form-data">
+        @csrf
+        <div class="form-group">
+            <label for="titre">Titre</label>
+            <input type="text" name="titre" id="titre" class="form-control">
+        </div>
+        <div class="form-group">
+            <label for="chemin_fichier">Fichier</label>
+            <input type="file" name="chemin_fichier" id="chemin_fichier" class="form-control">
+        </div>
+        <button type="submit" class="btn btn-primary">Créer</button>
+    </form>
+@endsection
+```
+
+---
+
+### **Step 5: Define Routes**
+In `routes/web.php`:
+```php
 use App\Http\Controllers\DocumentController;
-use App\Http\Controllers\ResourceController;
 
 Route::resource('documents', DocumentController::class);
-Route::resource('resources', ResourceController::class);
+```
 
-Route::middleware('auth')->group(function () {
-    Route::resource('documents', DocumentController::class);
-    Route::resource('resources', ResourceController::class);
-});
+---
 
-# Step 9: Create Views
-# Documents Index View (resources/views/documents/index.blade.php)
-@extends('adminlte::page')
-@section('content')
-<h1>Documents</h1>
-<a href="{{ route('documents.create') }}" class="btn btn-primary">Upload Document</a>
-<table class="table">
-    <thead>
-        <tr>
-            <th>Title</th>
-            <th>Description</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach ($documents as $document)
-        <tr>
-            <td>{{ $document->title }}</td>
-            <td>{{ $document->description }}</td>
-            <td>
-                <a href="{{ route('documents.show', $document->id) }}" class="btn btn-info">View</a>
-                <a href="{{ route('documents.edit', $document->id) }}" class="btn btn-warning">Edit</a>
-                <form action="{{ route('documents.destroy', $document->id) }}" method="POST" style="display:inline;">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="btn btn-danger">Delete</button>
-                </form>
-            </td>
-        </tr>
-        @endforeach
-    </tbody>
-</table>
-@endsection
+### **Step 6: Start the Server**
+1. Run:
+   ```bash
+   php artisan serve
+   ```
+2. Open the browser at `http://127.0.0.1:8000/documents`.
 
-# Create Document View (resources/views/documents/create.blade.php)
-@extends('adminlte::page')
-@section('content')
-<h1>Upload Document</h1>
-<form action="{{ route('documents.store') }}" method="POST" enctype="multipart/form-data">
-    @csrf
-    <div class="form-group">
-        <label for="title">Title</label>
-        <input type="text" name="title" class="form-control" required>
-    </div>
-    <div class="form-group">
-        <label for="description">Description</label>
-        <textarea name="description" class="form-control"></textarea>
-    </div>
-    <div class="form-group">
-        <label for="file">File</label>
-        <input type="file" name="file" class="form-control" required>
-    </div>
-    <button type="submit" class="btn btn-primary">Upload</button>
-</form>
-@endsection
+---
 
-# Step 10: Implement CRUD Operations in Controllers
-# DocumentController (app/Http/Controllers/DocumentController.php)
-
-# Store Method
-public function store(Request $request)
-{
-    $request->validate([
-        'title' => 'required|string|max:255',
-        'description' => 'nullable|string',
-        'file' => 'required|file|mimes:pdf,doc,docx|max:2048',
-    ]);
-
-    $filePath = $request->file('file')->store('documents');
-
-    Document::create([
-        'title' => $request->title,
-        'description' => $request->description,
-        'file_path' => $filePath,
-    ]);
-
-    return redirect()->route('documents.index')->with('success', 'Document uploaded successfully.');
-}
-
-# Index Method
-public function index()
-{
-    $documents = Document::all();
-    return view('documents.index', compact('documents'));
-}
-
-# Step 11: Add Authentication
-composer require laravel/breeze --dev
-php artisan breeze:install
-npm install && npm run dev
-php artisan migrate
-
-# Step 12: Run the Project
-php artisan serve
+This will give you a basic application. Let me know if you need more help! 😊
