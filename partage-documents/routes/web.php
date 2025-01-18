@@ -17,9 +17,11 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
 Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
-// Route::resource('documents', DocumentController::class);
+Route::resource('documents', DocumentController::class);
 Route::resource('ressources', RessourceController::class);
-// Route::middleware('auth')->group(function () {
-//     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+// Route::middleware('auth', 'role:Formateur')->group(function () {
+//     Route::post('/documents/{document}/approve', [DocumentController::class, 'approve'])->name('documents.approve');
 // });
+
 

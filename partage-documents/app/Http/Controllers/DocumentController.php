@@ -19,14 +19,25 @@ class DocumentController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
+        $request->validate(['titre' => 'required', 'chemin_fichier' => 'required|file']);
+        $filePath = $request->file('chemin_fichier')->store('documents');
+    
+        Document::create([
+            'titre' => $request->titre,
+            'chemin_fichier' => $filePath,
+            'etat_validation' => 'en_attente',
+            'utilisateur_id' => auth()->id(),
         ]);
-
-        Document::create($request->all());
-        return redirect()->route('documents.index')->with('success', 'Document created successfully.');
+    
+        return redirect()->route('dashboard')->with('success', 'Document uploaded and awaiting approval.');
     }
+    
+    public function approve(Document $document)
+    {
+        $document->update(['etat_validation' => 'valide']);
+        return back()->with('success', 'Document approved.');
+    }
+    
 
     public function edit(Document $document)
     {
