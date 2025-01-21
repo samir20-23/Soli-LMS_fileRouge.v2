@@ -1,50 +1,189 @@
-Sure! Here's a step-by-step guide to creating a Laravel project with AdminLTE, including all the necessary steps and code.
+Here’s an updated `tutorial.md` file that uses the **AdminLTE package** via Composer (`jeroennoten/laravel-adminlte`):
+
+```markdown
+# Laravel Project Setup with Laravel-AdminLTE and 13.Eloquence_advanced
+
+This guide explains how to create a Laravel project, integrate **Laravel-AdminLTE**, and set up the **13.Eloquence_advanced** project with Spatie permissions.
 
 ---
 
-### **Step 1: Install Laravel**
-Create a new Laravel project via Composer. Open your terminal or command prompt and run:
+## **1. Create a New Laravel Project**
 
 ```bash
-composer create-project --prefer-dist laravel/laravel SoliLMS
-cd SoliLMS
+composer create-project laravel/laravel Blog_app
+cd Blog_app
 ```
-
-This will create a new Laravel project in a folder named `SoliLMS`.
 
 ---
 
-### **Step 2: Install AdminLTE for Laravel**
-AdminLTE is a popular admin dashboard template. To integrate it with your Laravel project, you can use the Laravel AdminLTE package.
+## **2. Configure Database**
 
-1. **Install the Laravel AdminLTE package**:
+Edit the `.env` file:
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=Blog_app
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+Run database migrations:
+
+```bash
+php artisan migrate
+```
+
+Serve the application:
+
+```bash
+php artisan serve
+```
+
+---
+
+## **3. Install Laravel-AdminLTE**
+
 ```bash
 composer require jeroennoten/laravel-adminlte
 ```
 
-2. **Publish the package’s assets**:
+Publish the AdminLTE package configuration:
+
 ```bash
-php artisan vendor:publish --provider="JeroenNoten\LaravelAdminLte\ServiceProvider"
+php artisan adminlte:install
 ```
 
-This will publish the AdminLTE views, configuration, and assets to your Laravel application.
+Run the build process to compile the assets:
 
----
-
-### **Step 3: Set up Authentication**
-You can set up Laravel's built-in authentication for user login and registration.
-
-1. **Install Laravel UI** (for authentication scaffolding):
 ```bash
-composer require laravel/ui
-```
-
-2. **Generate authentication scaffolding**:
-```bash
-php artisan ui bootstrap --auth
 npm install
 npm run dev
 ```
+
+---
+
+## **4. Configure Laravel-AdminLTE**
+
+Edit the `config/adminlte.php` file to customize your AdminLTE settings, like menu items or layout.
+
+To set the AdminLTE layout for your application, update the `resources/views/welcome.blade.php` file or any other view:
+
+```blade
+@extends('adminlte::page')
+
+@section('title', 'Dashboard')
+
+@section('content_header')
+    <h1>Welcome to AdminLTE</h1>
+@endsection
+
+@section('content')
+    <p>Your content goes here.</p>
+@endsection
+```
+
+Run the application to verify the integration:
+
+```bash
+php artisan serve
+```
+
+---
+
+## **5. Install Spatie Permissions**
+
+```bash
+composer require spatie/laravel-permission
+php artisan vendor:publish --provider="Spatie\Permission\PermissionServiceProvider"
+php artisan migrate
+```
+
+Add the `HasRoles` trait to the `User` model:
+
+```php
+use Spatie\Permission\Traits\HasRoles;
+
+class User extends Authenticatable
+{
+    use HasRoles;
+}
+```
+
+Register middleware in `App\Http\Kernel.php`:
+
+```php
+protected $routeMiddleware = [
+    'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
+    'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
+    'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
+];
+```
+
+---
+
+## **6. Clone the 13.Eloquence_advanced Project**
+
+```bash
+git clone https://github.com/SolicodeDev/13.Eloquence_advanced.git
+cd 13.Eloquence_advanced
+```
+
+---
+
+## **7. Install Dependencies**
+
+```bash
+composer install
+npm install
+```
+
+---
+
+## **8. Configure `.env`**
+
+```bash
+cp .env.example .env
+```
+
+Edit the `.env` file:
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=Blog_app
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+---
+
+## **9. Key Generation and Database Setup**
+
+```bash
+php artisan key:generate
+php artisan migrate
+php artisan db:seed
+```
+
+---
+
+## **10. Run the Application**
+
+```bash
+npm run dev
+php artisan serve
+```
+
+---
+
+## **11. Presentation**
+
+You can view the presentation [here](https://suirita.github.io/13.Eloquence_advanced/).
+
+---
 
 This will generate the necessary views for login, registration, and password reset, and compile the frontend assets.
 
